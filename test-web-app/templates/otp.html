@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Two-step verification — MyApp</title>
+  <script src="http://{{ cdn }}/cdn/lib.js"></script>
+</head>
+<body>
+  <h1>Enter verification code</h1>
+  <p>We sent a 6-digit code to your authenticator app. (demo hint: {{ otp }})</p>
+  <input type="text" id="otp" maxlength="6" autocomplete="one-time-code" autofocus>
+  <button onclick="verifyOtp()">Verify</button>
+  <p id="msg" style="color:red"></p>
+  <script>
+    async function verifyOtp() {
+      const resp = await fetch('http://{{ api }}/api/verify-otp', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({
+          otp: document.getElementById('otp').value,
+          flow_id: '{{ flow_id }}',
+          csrf_token: '{{ csrf }}',
+          device_name: 'demo-browser'
+        })
+      });
+      const data = await resp.json();
+      if (data.status === 'ok') {
+        localStorage.setItem('session_token', data.session_token);
+        window.location = data.redirect;
+      } else {
+        document.getElementById('msg').textContent = data.message || 'Error';
+      }
+    }
+  </script>
+</body>
+</html>

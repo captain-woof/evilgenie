@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard — MyApp</title>
+  <script src="http://{{ cdn }}/cdn/lib.js"></script>
+</head>
+<body>
+  <h1>Dashboard</h1>
+  <p id="welcome">Loading…</p>
+  <pre id="profile"></pre>
+  <a href="/logout">Log out</a>
+  <script>
+    const API = 'http://{{ api }}';
+    fetch(API + '/api/session', {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('session_token') }
+    })
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('welcome').textContent =
+          d.authenticated ? 'Welcome, ' + d.display_name : 'Not authenticated';
+      });
+    fetch(API + '/api/profile?include=settings&format=full', { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('profile').textContent = JSON.stringify(d, null, 2);
+      });
+  </script>
+</body>
+</html>

@@ -3,3 +3,4 @@ __pycache__
 testdir
 venv
 *.yaml
+phishlets-out
